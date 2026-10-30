@@ -1,6 +1,6 @@
 {
   "name": "@pawanhirumina/ai-faq",
-  "version": "1.0.6",
+  "version": "1.0.7",
   "description": "An interactive FAQ accordion component featuring an integrated AI query box.",
   "type": "module",
   "main": "./dist/ai-faq.umd.cjs",
