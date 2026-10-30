@@ -1,46 +1,45 @@
 #!/usr/bin/env node
+import fs from 'fs'
+import path from 'path'
+import { fileURLToPath } from 'url'
 
-import { cpSync, mkdirSync } from "fs";
-import { resolve, dirname } from "path";
-import { fileURLToPath } from "url";
+const __filename = fileURLToPath(import.meta.url)
+const __dirname = path.dirname(__filename)
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
+const args = process.argv.slice(2)
+const variant = args[0] || 'ts-tw'
 
-const args = process.argv.slice(2);
-const flavor = args[0] || "ts-tw";
-
-const validFlavors = ["ts-tw", "js-tw", "ts-css", "js-css"];
-
-if (!validFlavors.includes(flavor)) {
-  console.error(`Invalid flavor: "${flavor}". Choose from: ${validFlavors.join(", ")}`);
-  process.exit(1);
+const map = {
+  'ts-tw': 'src/ts-tw/FaqAI.tsx',
+  'ts-css': 'src/ts-css/FaqAI.tsx',
+  'js-tw': 'src/js-tw/FaqAI.jsx',
+  'js-css': 'src/js-css/FaqAI.jsx'
 }
 
-const sourceMap = {
-  "ts-tw": "src/ts-tw/FaqAI.tsx",
-  "js-tw": "src/js-tw/FaqAI.jsx",
-  "ts-css": ["src/ts-css/FaqAI.tsx", "src/ts-css/FaqAI.css"],
-  "js-css": ["src/js-css/FaqAI.jsx", "src/ts-css/FaqAI.css"],
-};
+const sourceRel = map[variant] || map['ts-tw']
+const sourcePath = path.join(__dirname, '..', sourceRel)
 
-const targetDir = resolve(process.cwd(), "src/components");
-mkdirSync(targetDir, { recursive: true });
+const destDir = path.join(process.cwd(), 'src', 'components')
+const destFile = path.join(destDir, path.basename(sourceRel))
 
-const filesToCopy = sourceMap[flavor];
+console.log(`\nai-faq -> Copying ${variant}`)
+console.log(`From: ${sourcePath}`)
+console.log(`To: ${destFile}\n`)
 
-if (Array.isArray(filesToCopy)) {
-  filesToCopy.forEach((file) => {
-    const fileName = file.split("/").pop();
-    cpSync(resolve(__dirname, "..", file), resolve(targetDir, fileName));
-    console.log(`Successfully installed ${fileName} to src/components/`);
-  });
-} else {
-  const fileName = filesToCopy.split("/").pop();
-  cpSync(resolve(__dirname, "..", filesToCopy), resolve(targetDir, fileName));
-  console.log(`Successfully installed ${fileName} to src/components/`);
+if (!fs.existsSync(sourcePath)) {
+  console.error(`Source not found! Did you publish with src/ included?`)
+  console.error(`Checked: ${sourcePath}`)
+  process.exit(1)
 }
 
-console.log("\nNext steps:");
-console.log("1. Make sure you have installed peer dependencies: npm i framer-motion lucide-react");
-console.log("2. Import and use your FaqAI component!");
+fs.mkdirSync(destDir, { recursive: true })
+fs.copyFileSync(sourcePath, destFile)
+
+if (variant.includes('css')) {
+  const cssSrc = path.join(__dirname, '..', 'src/ts-css/FaqAI.css')
+  if (fs.existsSync(cssSrc)) {
+    fs.copyFileSync(cssSrc, path.join(destDir, 'FaqAI.css'))
+  }
+}
+
+console.log(`Copied to src/components/${path.basename(sourceRel)}`)

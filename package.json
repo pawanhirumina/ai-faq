@@ -6,7 +6,7 @@
   "main": "./dist/ai-faq.umd.cjs",
   "module": "./dist/ai-faq.js",
   "bin": {
-    "ai-faq": "bin/cli.js"
+    "ai-faq": "./bin/cli.js"
   },
   "exports": {
     ".": {
@@ -15,8 +15,9 @@
     }
   },
   "files": [
-    "dist",
-    "bin"
+	  "dist",
+	  "bin",
+	  "src"
   ],
   "homepage": "https://github.com/pawanhirumina/ai-faq#readme",
   "repository": {
