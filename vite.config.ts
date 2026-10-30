@@ -4,12 +4,20 @@ import dts from 'vite-plugin-dts';
 import { resolve } from 'path';
 
 export default defineConfig({
-  plugins: [react(), dts({ include: ['src'] })],
+  plugins: [
+    react(), 
+    dts({ 
+      include: ['src'],
+      insertTypesEntry: true,
+      rollupTypes: true 
+    })
+  ],
   build: {
     lib: {
       entry: resolve(__dirname, 'src/index.ts'),
       name: 'AiFaq',
-      fileName: 'ai-faq',
+      formats: ['es', 'umd'],
+      fileName: (format) => `ai-faq.${format === 'es' ? 'js' : 'umd.cjs'}`,
     },
     rollupOptions: {
       external: ['react', 'react-dom', 'framer-motion', 'lucide-react'],
