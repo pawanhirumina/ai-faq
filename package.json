@@ -1,12 +1,12 @@
 {
-  "name": "ai-faq",
-  "version": "1.0.0",
+  "name": "@pawanhirumina/ai-faq",
+  "version": "1.0.1",
   "description": "An interactive FAQ accordion component featuring an integrated AI query box.",
   "type": "module",
   "main": "./dist/ai-faq.umd.cjs",
   "module": "./dist/ai-faq.js",
   "bin": {
-    "ai-faq": "./bin/cli.js"
+    "ai-faq": "bin/cli.js"
   },
   "exports": {
     ".": {
@@ -22,6 +22,17 @@
     "src/ts-css",
     "src/js-css"
   ],
+  "homepage": "https://github.com/pawanhirumina/ai-faq#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/pawanhirumina/ai-faq.git"
+  },
+  "bugs": {
+    "url": "https://github.com/pawanhirumina/ai-faq/issues"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
   "peerDependencies": {
     "react": "^18.0.0 || ^19.0.0",
     "react-dom": "^18.0.0 || ^19.0.0",
