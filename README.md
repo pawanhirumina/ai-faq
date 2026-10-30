@@ -9,7 +9,7 @@ An interactive FAQ accordion component featuring an integrated AI query box with
 - **Accordion FAQs**: Smooth expand/collapse animation for standard questions.
 - **AI Prompt Box**: Built-in input box to query custom AI questions directly inside the FAQ list.
 - **API Integration**: Automatically calls `/api/ask` (or a custom endpoint via props) with `useEffect` and handles cleanup via `AbortController`.
-- **Fully Customizable Props**: Pass your own list of FAQs and custom endpoints.
+- **Fully Customizable Props**: Pass your own list of FAQs via the `faqs` prop, custom endpoints, and placeholders.
 - **Multiple Flavors Available**: Choose between TypeScript/JavaScript with Tailwind CSS or plain CSS.
 
 ---
@@ -27,24 +27,36 @@ Ensure you have the required peer dependencies installed in your project:
 npm install framer-motion lucide-react
 ```
 
-### 3. Example Usage (NPM Package / React Component)
+## 📋 Passing Custom Data via Props
+
+You can easily pass your own array of custom FAQ questions and answers using the `faqs` prop. Each item in the array must follow the `FaqItem` structure (`id`, `q`, and `a`).
+
+### Custom FAQs Example
 
 ```tsx
 import React from "react";
-import { FaqAI } from "@pawanhirumina/ai-faq";
+import { FaqAI, FaqItem } from "@pawanhirumina/ai-faq";
 
-const customFaqs = [
-  { id: 1, q: "What is your return policy?", a: "You can return any item within 30 days." },
-  { id: 2, q: "Do you offer international shipping?", a: "Yes, we ship worldwide!" },
+const myCustomFaqs: FaqItem[] = [
+  { 
+    id: "1", 
+    q: "What is your return policy?", 
+    a: "You can return any item within 30 days of purchase with receipt." 
+  },
+  { 
+    id: "2", 
+    q: "How do I track my order?", 
+    a: "Once shipped, you will receive an email with tracking details." 
+  },
 ];
 
 export default function App() {
   return (
     <div className="max-w-2xl mx-auto py-12">
       <FaqAI 
-        faqs={customFaqs} 
-        aiEndpoint="/api/custom-ai-endpoint" 
-        aiPlaceholder="Ask our AI assistant..." 
+        faqs={myCustomFaqs} 
+        aiEndpoint="/api/ask" 
+        aiPlaceholder="Ask anything about our store..." 
       />
     </div>
   );
