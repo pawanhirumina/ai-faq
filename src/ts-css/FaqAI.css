@@ -1,0 +1,80 @@
+.faq-container {
+  background-color: #18181b;
+  color: #ffffff;
+  width: 100%;
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.faq-wrapper {
+  display: flex;
+  width: 500px;
+  flex-direction: column;
+}
+
+.faq-item, .faq-ai-box {
+  background-color: #27272a;
+  border-radius: 4px;
+  margin: 8px 0;
+  padding: 16px;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.faq-ai-box {
+  border: 1px solid #3f3f46;
+  cursor: default;
+}
+
+.faq-question {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 0;
+  font-size: 1rem;
+}
+
+.faq-answer {
+  color: #cbd5e1;
+  padding-top: 4px;
+  font-size: 0.875rem;
+}
+
+.faq-ai-input-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+}
+
+.faq-ai-input-container {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: 1;
+}
+
+.faq-ai-input {
+  background: transparent;
+  outline: none;
+  width: 100%;
+  color: #white;
+  border: none;
+  font-size: 0.875rem;
+}
+
+.faq-ai-input::placeholder {
+  color: #71717a;
+}
+
+.faq-ai-btn {
+  background: transparent;
+  border: none;
+  padding: 4px;
+  cursor: pointer;
+}
