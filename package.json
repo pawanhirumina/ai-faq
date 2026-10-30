@@ -5,6 +5,9 @@
   "type": "module",
   "main": "./dist/ai-faq.umd.cjs",
   "module": "./dist/ai-faq.js",
+  "bin": {
+    "ai-faq": "./bin/cli.js"
+  },
   "exports": {
     ".": {
       "import": "./dist/ai-faq.js",
@@ -12,7 +15,12 @@
     }
   },
   "files": [
-    "dist"
+    "dist",
+    "bin",
+    "src/ts-tw",
+    "src/js-tw",
+    "src/ts-css",
+    "src/js-css"
   ],
   "peerDependencies": {
     "react": "^18.0.0 || ^19.0.0",
