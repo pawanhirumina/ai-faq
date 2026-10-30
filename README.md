@@ -69,7 +69,49 @@ npx @pawanhirumina/ai-faq [flavor]
 
 ---
 
-## ⚙️ Component Props
+## 🔌 AI Endpoint Backend Contract
+
+When a user submits a query in the AI input box, the component automatically sends a `POST` request to your `aiEndpoint` (default: `/api/ask`).
+
+### Request Format
+Your backend endpoint will receive a JSON payload:
+```json
+{
+  "query": "What is the warranty period for this product?"
+}
+```
+
+### Response Format
+- **Success Response (Status `200 OK`)**:
+  ```json
+  {
+    "answer": "All products come with a standard 1-year limited warranty."
+  }
+  ```
+
+- **Error Response (Status `4xx` / `5xx`)**:
+  ```json
+  {
+    "error": "Failed to process AI query."
+  }
+  ```
+
+### Example Backend Handler (Node.js / Express)
+```js
+app.post('/api/ask', async (req, res) => {
+  const { query } = req.body;
+  if (!query) {
+    return res.status(400).json({ error: "Query is required" });
+  }
+  
+  // Call your AI model / service here
+  const answer = `Here is the answer to: "${query}"`;
+  
+  res.json({ answer });
+});
+```
+
+---
 
 | Prop | Type | Default | Description |
 | :--- | :--- | :--- | :--- |
