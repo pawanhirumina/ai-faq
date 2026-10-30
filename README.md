@@ -2,6 +2,8 @@
 
 An interactive FAQ accordion component featuring an integrated AI query box with smooth layout animations (Powered by Framer Motion, Tailwind CSS, and Lucide Icons). Inspired by React Bits.
 
+[demo.webm](https://github.com/user-attachments/assets/d2c5ba97-ba6d-499e-aaab-82eb831616a6)
+
 ---
 
 ## ✨ Features
