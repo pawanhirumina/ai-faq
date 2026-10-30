@@ -1,6 +1,6 @@
 {
   "name": "@pawanhirumina/ai-faq",
-  "version": "1.0.7",
+  "version": "1.0.8",
   "description": "An interactive FAQ accordion component featuring an integrated AI query box.",
   "type": "module",
   "main": "./dist/ai-faq.umd.cjs",
@@ -15,9 +15,9 @@
     }
   },
   "files": [
-	  "dist",
-	  "bin",
-	  "src"
+    "dist",
+    "bin",
+    "src"
   ],
   "homepage": "https://github.com/pawanhirumina/ai-faq#readme",
   "repository": {
