@@ -1,11 +1,96 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { ChevronDown, Sparkles, Loader2 } from "lucide-react";
+import { ChevronDown, Sparkles } from "lucide-react";
 import "./FaqAI.css";
 
 const AI_ENDPOINT = import.meta.env.VITE_AI_API_URL || "/api/ask";
 
-export default function Faq() {
+export interface FaqItem {
+  id: number | string;
+  q: string;
+  a: string;
+}
+
+export interface FaqAIProps {
+  /** Array of FAQ items to display */
+  faqs?: FaqItem[];
+  /** Custom AI API endpoint override */
+  aiEndpoint?: string;
+  /** Custom placeholder for the AI query input */
+  aiPlaceholder?: string;
+  /** Loading indicator variant ("text-shimmer" | "skeleton") */
+  loadingVariant?: "text-shimmer" | "skeleton";
+  /** Custom text for thinking loader */
+  loadingText?: string;
+}
+
+const DEFAULT_FAQS: FaqItem[] = [
+  {
+    id: 1,
+    q: "How can I contact you?",
+    a: "You can contact me via email at pawan@example.com or DM me on Instagram @pawan.hirumina - I usually reply within 24h.",
+  },
+  {
+    id: 2,
+    q: "What is your tech stack?",
+    a: "I build with Next.js / React, Vite, Tailwind CSS, and TypeScript. Currently learning Rust for backend stuff.",
+  },
+  {
+    id: 3,
+    q: "Are you available for freelance work?",
+    a: "Yes! I'm open for small freelance projects, landing pages, and portfolio sites. Hit me up with your idea.",
+  },
+  {
+    id: 4,
+    q: "Do you share your source code?",
+    a: "Yep, most of my learning projects are on GitHub. For client work, I can share private repos on request.",
+  },
+];
+
+function ShimmerText({ children }: { children: React.ReactNode }) {
+  return (
+    <motion.p
+      className="text-sm font-medium bg-gradient-to-r from-zinc-500 via-white to-zinc-500 bg-clip-text text-transparent"
+      style={{ backgroundSize: "200% 100%" }}
+      animate={{ backgroundPosition: ["0% 50%", "200% 50%"] }}
+      transition={{ duration: 1.2, repeat: Infinity, ease: "linear" }}
+    >
+      {children}
+    </motion.p>
+  );
+}
+
+function SkeletonLoader() {
+  return (
+    <div className="space-y-2.5 py-1">
+      {["w-[85%]", "w-[70%]", "w-[55%]"].map((w, i) => (
+        <div
+          key={i}
+          className={`h-3 rounded-full bg-zinc-700/60 relative overflow-hidden ${w}`}
+        >
+          <motion.div
+            className="absolute inset-0 bg-gradient-to-r from-transparent via-white/[0.12] to-transparent"
+            animate={{ x: ["-100%", "200%"] }}
+            transition={{
+              duration: 1.2,
+              repeat: Infinity,
+              ease: "easeInOut",
+              delay: i * 0.15,
+            }}
+          />
+        </div>
+      ))}
+    </div>
+  );
+}
+
+export default function Faq({
+  faqs = DEFAULT_FAQS,
+  aiEndpoint = AI_ENDPOINT,
+  aiPlaceholder = "Ask AI",
+  loadingVariant = "text-shimmer",
+  loadingText = "Thinking...",
+}: FaqAIProps) {
   const [openId, setOpenId] = useState<number | string | null>(null);
   const [aiQuery, setAiQuery] = useState("");
   const [aiAnswer, setAiAnswer] = useState<string | null>(null);
@@ -22,66 +107,32 @@ export default function Faq() {
 
   useEffect(() => {
     if (!request) return;
-
     const controller = new AbortController();
-
     async function fetchAnswer() {
       setLoading(true);
       setAiAnswer(null);
       setAiError("");
-
       try {
-        const res = await fetch(AI_ENDPOINT, {
+        const res = await fetch(aiEndpoint, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ query: request.query }),
           signal: controller.signal,
         });
         const data = await res.json().catch(() => ({}));
-
-        if (!res.ok) {
-          throw new Error(data.error || "Failed to get answer");
-        }
-
+        if (!res.ok) throw new Error(data.error || "Failed to get answer");
         setAiAnswer(data.answer || "No answer returned");
       } catch (err: any) {
         if (err.name !== "AbortError") {
           setAiError(err.message || "Failed to get answer");
         }
       } finally {
-        if (!controller.signal.aborted) {
-          setLoading(false);
-        }
+        if (!controller.signal.aborted) setLoading(false);
       }
     }
-
     fetchAnswer();
-
     return () => controller.abort();
-  }, [request]);
-
-  const faqs = [
-    {
-      id: 1,
-      q: "How can I contact you?",
-      a: "You can contact me via email at pawan@example.com or DM me on Instagram @pawan.hirumina - I usually reply within 24h.",
-    },
-    {
-      id: 2,
-      q: "What is your tech stack?",
-      a: "I build with Next.js / React, Vite, Tailwind CSS, and TypeScript. Currently learning Rust for backend stuff.",
-    },
-    {
-      id: 3,
-      q: "Are you available for freelance work?",
-      a: "Yes! I'm open for small freelance projects, landing pages, and portfolio sites. Hit me up with your idea.",
-    },
-    {
-      id: 4,
-      q: "Do you share your source code?",
-      a: "Yep, most of my learning projects are on GitHub. For client work, I can share private repos on request.",
-    },
-  ];
+  }, [request, aiEndpoint]);
 
   return (
     <main className="faq-container">
@@ -128,7 +179,7 @@ export default function Faq() {
                   if (e.key === "Enter") handleAsk();
                   if (e.key === "Escape") setOpenId(null);
                 }}
-                placeholder="Ask AI"
+                placeholder={aiPlaceholder}
                 className="faq-ai-input"
               />
             </div>
@@ -159,9 +210,11 @@ export default function Faq() {
               >
                 <div style={{ paddingTop: "12px", borderTop: "1px solid rgba(113, 113, 122, 0.5)", marginTop: "4px" }}>
                   {loading ? (
-                    <div style={{ display: "flex", alignItems: "center", gap: "8px", fontSize: "0.875rem", color: "#a1a1aa" }}>
-                      <Loader2 size={14} className="animate-spin" /> Thinking...
-                    </div>
+                    loadingVariant === "skeleton" ? (
+                      <SkeletonLoader />
+                    ) : (
+                      <ShimmerText>{loadingText}</ShimmerText>
+                    )
                   ) : aiError ? (
                     <p style={{ color: "#f87171", fontSize: "0.875rem", lineHeight: "1.5" }}>{aiError}</p>
                   ) : aiAnswer ? (

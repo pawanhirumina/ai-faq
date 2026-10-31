@@ -132,6 +132,8 @@ app.post('/api/ask', async (req, res) => {
 | `faqs` | `Array<{ id: string \| number, q: string, a: string }>` | Default sample questions | Array of FAQ items to render. |
 | `aiEndpoint` | `string` | `import.meta.env.VITE_AI_API_URL \|\| "/api/ask"` | Custom backend API endpoint for AI queries. |
 | `aiPlaceholder` | `string` | `"Ask AI"` | Placeholder text for the AI input box. |
+| `loadingVariant` | `"text-shimmer" \| "skeleton"` | `"text-shimmer"` | Loading indicator animation style. |
+| `loadingText` | `string` | `"Thinking..."` | Text displayed during loading when using `"text-shimmer"`. |
 
 ---
 

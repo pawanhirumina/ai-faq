@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { ChevronDown, Sparkles, Loader2 } from "lucide-react";
+import { ChevronDown, Sparkles } from "lucide-react";
 
 const AI_ENDPOINT = import.meta.env.VITE_AI_API_URL || "/api/ask";
 
@@ -17,6 +17,10 @@ export interface FaqAIProps {
   aiEndpoint?: string;
   /** Custom placeholder for the AI query input */
   aiPlaceholder?: string;
+  /** Loading indicator variant ("text-shimmer" | "skeleton") */
+  loadingVariant?: "text-shimmer" | "skeleton";
+  /** Custom text for thinking loader */
+  loadingText?: string;
 }
 
 const DEFAULT_FAQS: FaqItem[] = [
@@ -42,10 +46,49 @@ const DEFAULT_FAQS: FaqItem[] = [
   },
 ];
 
+function ShimmerText({ children }: { children: React.ReactNode }) {
+  return (
+    <motion.p
+      className="text-sm font-medium bg-gradient-to-r from-zinc-500 via-white to-zinc-500 bg-clip-text text-transparent"
+      style={{ backgroundSize: "200% 100%" }}
+      animate={{ backgroundPosition: ["0% 50%", "200% 50%"] }}
+      transition={{ duration: 1.2, repeat: Infinity, ease: "linear" }}
+    >
+      {children}
+    </motion.p>
+  );
+}
+
+function SkeletonLoader() {
+  return (
+    <div className="space-y-2.5 py-1">
+      {["w-[85%]", "w-[70%]", "w-[55%]"].map((w, i) => (
+        <div
+          key={i}
+          className={`h-3 rounded-full bg-zinc-700/60 relative overflow-hidden ${w}`}
+        >
+          <motion.div
+            className="absolute inset-0 bg-gradient-to-r from-transparent via-white/[0.12] to-transparent"
+            animate={{ x: ["-100%", "200%"] }}
+            transition={{
+              duration: 1.2,
+              repeat: Infinity,
+              ease: "easeInOut",
+              delay: i * 0.15,
+            }}
+          />
+        </div>
+      ))}
+    </div>
+  );
+}
+
 export default function FaqAI({
   faqs = DEFAULT_FAQS,
   aiEndpoint = AI_ENDPOINT,
   aiPlaceholder = "Ask AI",
+  loadingVariant = "text-shimmer",
+  loadingText = "Thinking...",
 }: FaqAIProps) {
   const [openId, setOpenId] = useState<number | string | null>(null);
   const [aiQuery, setAiQuery] = useState("");
@@ -63,14 +106,11 @@ export default function FaqAI({
 
   useEffect(() => {
     if (!request) return;
-
     const controller = new AbortController();
-
     async function fetchAnswer() {
       setLoading(true);
       setAiAnswer(null);
       setAiError("");
-
       try {
         const res = await fetch(aiEndpoint, {
           method: "POST",
@@ -79,25 +119,17 @@ export default function FaqAI({
           signal: controller.signal,
         });
         const data = await res.json().catch(() => ({}));
-
-        if (!res.ok) {
-          throw new Error(data.error || "Failed to get answer");
-        }
-
+        if (!res.ok) throw new Error(data.error || "Failed to get answer");
         setAiAnswer(data.answer || "No answer returned");
       } catch (err: any) {
         if (err.name !== "AbortError") {
           setAiError(err.message || "Failed to get answer");
         }
       } finally {
-        if (!controller.signal.aborted) {
-          setLoading(false);
-        }
+        if (!controller.signal.aborted) setLoading(false);
       }
     }
-
     fetchAnswer();
-
     return () => controller.abort();
   }, [request, aiEndpoint]);
 
@@ -146,28 +178,19 @@ export default function FaqAI({
                 value={aiQuery}
                 onChange={(e) => setAiQuery(e.target.value)}
                 onKeyDown={(e) => {
-                  if (e.key === "Enter") {
-                    handleAsk();
-                  }
-                  if (e.key === "Escape") {
-                    setOpenId(null);
-                  }
+                  if (e.key === "Enter") handleAsk();
+                  if (e.key === "Escape") setOpenId(null);
                 }}
                 placeholder={aiPlaceholder}
                 className="bg-transparent outline-none w-full text-white placeholder:text-zinc-500 text-sm"
               />
             </div>
-
             <button
               onClick={(e) => {
                 e.stopPropagation();
-                if (openId === "ai") {
-                  setOpenId(null);
-                } else if (aiQuery.trim()) {
-                  handleAsk();
-                } else {
-                  setOpenId("ai");
-                }
+                if (openId === "ai") setOpenId(null);
+                else if (aiQuery.trim()) handleAsk();
+                else setOpenId("ai");
               }}
               className="p-1 cursor-pointer"
             >
@@ -188,11 +211,15 @@ export default function FaqAI({
               >
                 <div className="pt-3 border-t border-zinc-700/50 mt-1">
                   {loading ? (
-                    <div className="flex items-center gap-2 text-sm text-zinc-400">
-                      <Loader2 size={14} className="animate-spin" /> Thinking...
-                    </div>
+                    loadingVariant === "skeleton" ? (
+                      <SkeletonLoader />
+                    ) : (
+                      <ShimmerText>{loadingText}</ShimmerText>
+                    )
                   ) : aiError ? (
-                    <p className="text-red-400 text-sm leading-relaxed">{aiError}</p>
+                    <p className="text-red-400 text-sm leading-relaxed">
+                      {aiError}
+                    </p>
                   ) : aiAnswer ? (
                     <p className="text-slate-300 text-sm leading-relaxed">
                       {aiAnswer}
