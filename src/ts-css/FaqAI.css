@@ -1,16 +1,6 @@
-.faq-container {
-  background-color: #18181b;
-  color: #ffffff;
-  width: 100%;
-  min-height: 100vh;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
 .faq-wrapper {
   display: flex;
-  width: 500px;
+  max-width: 500px;
   flex-direction: column;
 }
 
@@ -36,6 +26,7 @@
   align-items: center;
   margin: 0;
   font-size: 1rem;
+  color: #ffffff;
 }
 
 .faq-answer {

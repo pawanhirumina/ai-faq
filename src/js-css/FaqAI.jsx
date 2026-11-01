@@ -116,7 +116,6 @@ export default function Faq({
   }, [request, aiEndpoint]);
 
   return (
-    <main className="faq-container">
       <div className="faq-wrapper">
         {faqs.map((faq) => {
           const isOpen = openId === faq.id;
@@ -211,6 +210,5 @@ export default function Faq({
           </AnimatePresence>
         </motion.div>
       </div>
-    </main>
   );
 }

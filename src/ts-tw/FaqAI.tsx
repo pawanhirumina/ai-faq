@@ -134,8 +134,7 @@ export default function FaqAI({
   }, [request, aiEndpoint]);
 
   return (
-    <main className="bg-zinc-900 text-white w-full min-h-screen justify-center flex flex-row items-center">
-      <div className="flex w-[500px] flex-col">
+      <div className="flex max-w-[500px] flex-col">
         {faqs.map((faq) => {
           const isOpen = openId === faq.id;
           return (
@@ -145,7 +144,7 @@ export default function FaqAI({
               onClick={() => setOpenId(isOpen ? null : faq.id)}
               className="bg-zinc-800 rounded-sm my-2 p-4 cursor-pointer flex flex-col gap-2"
             >
-              <h2 className="flex justify-between items-center">
+              <h2 className="text-white flex justify-between items-center">
                 {faq.q}
                 <motion.div animate={{ rotate: isOpen ? 180 : 0 }}>
                   <ChevronDown size={18} className="text-zinc-400" />
@@ -233,6 +232,5 @@ export default function FaqAI({
           </AnimatePresence>
         </motion.div>
       </div>
-    </main>
   );
 }
